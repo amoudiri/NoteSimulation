@@ -1,0 +1,4048 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Système Risk Management: Système de Notation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #d10000;
+      --primary-light: #ff5252;
+      --primary-dark: #9b0000;
+      --secondary: #005792;
+      --light: #f5f5f5;
+      --dark: #333333;
+      --gray: #e0e0e0;
+      --success: #4CAF50;
+      --warning: #FFC107;
+      --danger: #FF5252;
+      --info: #2196F3;
+      --dynamism: #c0392b;
+      --debt: #e74c3c;
+      --profitability: #27ae60;
+      --structure: #2980b9;
+      --liquidity: #8e44ad;
+      
+      /* Grades colors */
+      --grade-a: #4CAF50;
+      --grade-b: #8BC34A;
+      --grade-c: #CDDC39;
+      --grade-d: #FFC107;
+      --grade-e: #FF9800;
+      --grade-f: #FF5722;
+      --grade-g: #F44336;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    
+    body {
+      background-color: #f0f2f5;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo i {
+      font-size: 28px;
+    }
+    
+    .page-title {
+      margin: 30px 0;
+      text-align: center;
+      color: var(--primary);
+      font-size: 32px;
+      font-weight: bold;
+    }
+    
+    /* Main Sections Navigation */
+    .main-nav {
+      display: flex;
+      list-style: none;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    
+    .main-nav-item {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      padding: 20px;
+      font-weight: 600;
+      font-size: 18px;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .main-nav-item:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .main-nav-item.active {
+      background-color: #f5f5f5;
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .main-section {
+      display: none;
+    }
+    
+    .main-section.active {
+      display: block;
+    }
+    
+    /* Tabs Navigation */
+    .tabs-container {
+      margin-bottom: 30px;
+    }
+    
+    .tabs-nav {
+      display: flex;
+      list-style: none;
+      background-color: white;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .tab-item {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      padding: 15px 10px;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .tab-item:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .tab-item.active {
+      background-color: #f5f5f5;
+      border-bottom-color: var(--primary);
+    }
+    
+    .tab-item .tab-number {
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      background-color: #ddd;
+      color: #333;
+      border-radius: 50%;
+      line-height: 25px;
+      margin-right: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .tab-item.active .tab-number {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 30px;
+      background-color: white;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Section Titles */
+    .section-title-container {
+      margin-bottom: 20px;
+      border-left: 5px solid var(--primary);
+      padding-left: 15px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .section-subtitle {
+      color: #777;
+      font-size: 16px;
+    }
+    
+    /* Tab 1 - Variables */
+    .categories-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .category-card {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      flex: 1;
+      min-width: 200px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .category-card.active {
+      border-width: 2px;
+      border-color: var(--primary);
+      background-color: #fff9f9;
+    }
+    
+    .category-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+    }
+    
+    .category-icon.dynamism {
+      background-color: var(--dynamism);
+    }
+    
+    .category-icon.debt {
+      background-color: var(--debt);
+    }
+    
+    .category-icon.profitability {
+      background-color: var(--profitability);
+    }
+    
+    .category-icon.structure {
+      background-color: var(--structure);
+    }
+    
+    .category-icon.liquidity {
+      background-color: var(--liquidity);
+    }
+    
+    .category-name {
+      font-weight: bold;
+    }
+    
+    .category-count {
+      font-size: 12px;
+      color: #777;
+    }
+    
+    .variables-section {
+      margin-top: 20px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title .category-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+    
+    .add-btn {
+      background-color: var(--success);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .add-btn:hover {
+      background-color: #388E3C;
+    }
+    
+    .variable-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .variable-table th, .variable-table td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    .variable-table th {
+      background-color: #f5f5f5;
+      font-weight: 600;
+    }
+    
+    .variable-table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .variable-actions {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .action-btn {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 5px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .action-btn:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .action-btn.edit {
+      color: var(--info);
+    }
+    
+    .action-btn.delete {
+      color: var(--danger);
+    }
+
+    .value-input {
+      width: 100px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: right;
+    }
+    
+    /* Tab 2 - Modalités */
+    .variable-selector {
+      margin-bottom: 20px;
+    }
+    
+    .variable-selector label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .variable-selector select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .thresholds-container {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .thresholds-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .thresholds-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .visual-thresholds {
+      display: flex;
+      height: 60px;
+      margin: 20px 0;
+      position: relative;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    .threshold-block {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      position: relative;
+    }
+    
+    .threshold-label {
+      position: absolute;
+      bottom: -25px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+    }
+    
+    .threshold-score {
+      position: absolute;
+      top: -25px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .thresholds-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .thresholds-table th, .thresholds-table td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    .thresholds-table th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+    
+    .thresholds-table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    /* Tab 3 - Pondérations */
+    .weight-card {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .weight-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .weight-title {
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .weight-title .category-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+    
+    .weight-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .weight-table th, .weight-table td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    .weight-table th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+    
+    .weight-table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .weight-input {
+      width: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: right;
+    }
+    
+    .weight-distribution {
+      margin-top: 30px;
+    }
+    
+    .weight-bar {
+      height: 30px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      display: flex;
+    }
+    
+    .weight-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+      transition: width 0.3s;
+    }
+    
+    /* Tab 4 - Grilles */
+    .grades-container {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .grades-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .grades-table th, .grades-table td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    .grades-table th {
+      background-color: #333;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .grades-table tr:hover {
+      background-color: #f2f2f2;
+    }
+    
+    .threshold-input {
+      width: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: right;
+    }
+    
+    /* Tab 5 - Notation */
+    .results-container {
+      margin-bottom: 30px;
+    }
+    
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .results-table th, .results-table td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    
+    .results-table th {
+      background-color: #f5f5f5;
+      font-weight: 600;
+    }
+    
+    .results-table .category-header {
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .results-table .result-total {
+      background-color: #f9f9f9;
+      font-weight: bold;
+    }
+
+    .results-table .value-input {
+      width: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: right;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    .calculation-steps {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .calculation-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    
+    .calculation-formula {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-family: monospace;
+      font-size: 16px;
+    }
+    
+    .final-grade {
+      background-color: #fff9c4;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .grade-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .grade-value {
+      font-size: 28px;
+      font-weight: bold;
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #777;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .form-group .input-unit {
+      position: relative;
+    }
+    
+    .form-group .input-unit input {
+      padding-right: 40px;
+    }
+    
+    .form-group .unit {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #777;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .cancel-btn {
+      background-color: var(--gray);
+      color: var(--dark);
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .cancel-btn:hover {
+      background-color: #bdbdbd;
+    }
+    
+    .save-btn {
+      background-color: var(--success);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .save-btn:hover {
+      background-color: #388E3C;
+    }
+    
+    /* Navigation buttons */
+    .tab-navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    
+    .nav-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.3s;
+    }
+    
+    .prev-btn {
+      background-color: var(--gray);
+      color: var(--dark);
+    }
+    
+    .prev-btn:hover {
+      background-color: #bdbdbd;
+    }
+    
+    .next-btn {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .next-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 20px 0;
+      margin-top: 50px;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .copyright {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    
+    /* Dashboard Layout */
+    .dashboard-layout {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .dashboard-panel {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex: 1;
+    }
+    
+    .input-panel {
+      flex: 0 0 350px;
+    }
+    
+    .results-panel {
+      flex: 1;
+    }
+    
+    .panel-header {
+      background-color: #f8f8f8;
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      font-weight: bold;
+      border-radius: 8px 8px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .panel-body {
+      padding: 20px;
+    }
+    
+    /* Input Styling */
+    .input-group-container {
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .input-group-header {
+      padding: 10px 15px;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .input-group {
+      padding: 15px;
+      background-color: white;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .input-with-controls {
+      display: flex;
+      align-items: center;
+    }
+    
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+    
+    .value-control {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background-color: #f8f8f8;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .value-control:hover {
+      background-color: #e0e0e0;
+    }
+    
+    .value-control.decrease {
+      margin-right: 5px;
+    }
+    
+    .value-control.increase {
+      margin-left: 5px;
+    }
+    
+    .input-panel .value-input {
+      width: 100%;
+      padding: 10px 30px 10px 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: right;
+      font-size: 16px;
+      color: var(--primary);
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .input-panel .value-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(209, 0, 0, 0.1);
+    }
+    
+    .input-unit {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #777;
+    }
+    
+    .panel-action {
+      display: flex;
+      align-items: center;
+    }
+    
+    .action-button {
+      background-color: var(--info);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+    
+    .action-button:hover {
+      background-color: #0d8aee;
+    }
+    
+    .action-button.recalculating {
+      animation: pulse 0.5s ease-in-out;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .results-panel.updated {
+      animation: highlight 0.5s ease-in-out;
+    }
+    
+    @keyframes highlight {
+      0% { box-shadow: 0 0 0 rgba(33, 150, 243, 0); }
+      50% { box-shadow: 0 0 15px rgba(33, 150, 243, 0.5); }
+      100% { box-shadow: 0 0 0 rgba(33, 150, 243, 0); }
+    }
+    
+    /* Results Styling */
+    .grade-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .grade-info {
+      flex: 1;
+    }
+    
+    .grade-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .grade-description {
+      color: #555;
+      font-size: 16px;
+    }
+    
+    .grade-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .grade-value {
+      font-size: 48px;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: var(--grade-f);
+      color: white;
+      margin-bottom: 5px;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    .risk-value {
+      font-weight: bold;
+      color: #555;
+    }
+    
+    .chart-container, .details-container, .formula-container {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .chart-container h4, .details-container h4, .formula-container h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .score-bars {
+      margin-top: 20px;
+    }
+    
+    .score-category {
+      margin-bottom: 15px;
+    }
+    
+    .category-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .progress-container {
+      height: 25px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-weight: bold;
+      transition: width 0.5s ease-out;
+    }
+    
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .results-table th, .results-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    
+    .results-table th {
+      background-color: #f5f5f5;
+      font-weight: 600;
+    }
+    
+    .results-table .category-header {
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .results-table .result-total {
+      background-color: #f9f9f9;
+      font-weight: bold;
+    }
+    
+    .score-bubble {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .dashboard-layout {
+        flex-direction: column;
+      }
+      
+      .input-panel {
+        flex: auto;
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .tabs-nav {
+        flex-direction: column;
+      }
+      
+      .main-nav {
+        flex-direction: column;
+      }
+      
+      .categories-container {
+        flex-direction: column;
+      }
+      
+      .final-grade {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .tab-navigation {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .grade-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="header-content">
+        <a href="#" class="logo">
+            <i class="fas fa-chart-line"></i>
+            Système Risk Management: Système de Notation
+        </a>
+        <img src= "KZKNNEV.png" >
+    </div>
+</header>
+  
+<div class="container">
+  <h1 class="page-title">Outil de Notation Financière</h1>
+  
+  <!-- Navigation principale pour les deux sections -->
+  <ul class="main-nav">
+    <li class="main-nav-item active" data-section="configuration-section">
+      <i class="fas fa-cogs"></i> Paramétrage du modèle
+    </li>
+    <li class="main-nav-item" data-section="calculation-section">
+      <i class="fas fa-calculator"></i> Calcul de la note
+    </li>
+  </ul>
+  
+  <!-- Section 1: Paramétrage du modèle (onglets 1-4) -->
+  <div id="configuration-section" class="main-section active">
+    <div class="section-title-container">
+      <h2 class="section-title">Paramétrage du modèle</h2>
+      <p class="section-subtitle">Configurez les variables, modalités, pondérations et grilles pour votre système de notation.</p>
+    </div>
+    
+    <div class="tabs-container">
+      <!-- Add this inside the tabs-container in the configuration-section -->
+      <div class="model-actions" style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+        <button id="save-model-btn" class="action-button" style="background-color: var(--success);">
+          <i class="fas fa-save"></i> Enregistrer le modèle
+        </button>
+        <button id="manage-models-btn" class="action-button" style="background-color: var(--info); margin-left: 10px;">
+          <i class="fas fa-cog"></i> Gérer les modèles
+        </button>
+      </div>
+      
+      <ul class="tabs-nav">
+        <li class="tab-item active" data-tab="tab1">
+          <span class="tab-number">1</span> Introduction des variables
+        </li>
+        <li class="tab-item" data-tab="tab2">
+          <span class="tab-number">2</span> Définition des modalités
+        </li>
+        <li class="tab-item" data-tab="tab3">
+          <span class="tab-number">3</span> Pondération des variables
+        </li>
+        <li class="tab-item" data-tab="tab4">
+          <span class="tab-number">4</span> Définition des grilles
+        </li>
+      </ul>
+      
+      <!-- TAB 1: INTRODUCTION DES VARIABLES -->
+      <div id="tab1" class="tab-content active">
+        <div class="categories-container">
+          <div class="category-card active" data-category="dynamism">
+            <div class="category-icon dynamism">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="category-name">Dynamisme</div>
+            <div class="category-count">1 variable</div>
+          </div>
+          
+          <div class="category-card" data-category="debt">
+            <div class="category-icon debt">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="category-name">Endettement</div>
+            <div class="category-count">1 variable</div>
+          </div>
+          
+          <div class="category-card" data-category="profitability">
+            <div class="category-icon profitability">
+              <i class="fas fa-percentage"></i>
+            </div>
+            <div class="category-name">Rentabilité</div>
+            <div class="category-count">1 variable</div>
+          </div>
+          
+          <div class="category-card" data-category="structure">
+            <div class="category-icon structure">
+              <i class="fas fa-building"></i>
+            </div>
+            <div class="category-name">Structure</div>
+            <div class="category-count">1 variable</div>
+          </div>
+          
+          <div class="category-card" data-category="liquidity">
+            <div class="category-icon liquidity">
+              <i class="fas fa-tint"></i>
+            </div>
+            <div class="category-name">Liquidité</div>
+            <div class="category-count">1 variable</div>
+          </div>
+        </div>
+        
+        <div class="variables-section">
+          <div class="section-header">
+            <div class="section-title">
+              <div class="category-indicator" style="background-color: var(--dynamism);"></div>
+              Variables de Dynamisme
+            </div>
+            <button class="add-btn" id="add-variable-btn">
+              <i class="fas fa-plus"></i> Ajouter une variable
+            </button>
+          </div>
+          
+          <table class="variable-table" id="variables-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="variables-body">
+              <tr data-variable="growth">
+                <td>(C.An-C.An-1)/C.An-1</td>
+                <td>Taux de croissance</td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit" data-variable="growth">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete" data-variable="growth">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="tab-navigation">
+          <div></div> <!-- Espace vide pour aligner à droite -->
+          <button class="nav-btn next-btn" data-next="tab2">
+            Étape suivante <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- TAB 2: DÉFINITION DES MODALITÉS -->
+      <div id="tab2" class="tab-content">
+        <div class="variable-selector">
+          <label for="modalite-variable-select">Sélectionnez une variable :</label>
+          <select id="modalite-variable-select">
+            <option value="growth">(C.An-C.An-1)/C.An-1 - Dynamisme</option>
+            <option value="debt">Dettes/Total bilan - Endettement</option>
+            <option value="result">Résultat/CA - Rentabilité</option>
+            <option value="fpnet">FP net/TOTAL BILAN - Structure</option>
+            <option value="fdr">(FDR*360)/CA - Liquidité</option>
+          </select>
+        </div>
+        
+        <div class="thresholds-container">
+          <div class="thresholds-header">
+            <div class="thresholds-title">Tranches de conversion en score pour (C.An-C.An-1)/C.An-1</div>
+            <button class="add-btn" id="add-threshold-btn">
+              <i class="fas fa-plus"></i> Ajouter une tranche
+            </button>
+          </div>
+          
+          <div class="visual-thresholds" id="visual-thresholds">
+            <!-- Généré dynamiquement -->
+            <div class="threshold-block" style="width: 16.67%; background-color: #FF5252;">
+              <div class="threshold-score">0</div>
+              <div class="threshold-label">-∞</div>
+              0
+            </div>
+            <div class="threshold-block" style="width: 16.67%; background-color: #FFA726;">
+              <div class="threshold-score">20</div>
+              <div class="threshold-label">0</div>
+              20
+            </div>
+            <div class="threshold-block" style="width: 16.67%; background-color: #66BB6A;">
+              <div class="threshold-score">30</div>
+              <div class="threshold-label">2</div>
+              30
+            </div>
+            <div class="threshold-block" style="width: 16.67%; background-color: #42A5F5;">
+              <div class="threshold-score">40</div>
+              <div class="threshold-label">3</div>
+              40
+            </div>
+            <div class="threshold-block" style="width: 16.67%; background-color: #5C6BC0;">
+              <div class="threshold-score">80</div>
+              <div class="threshold-label">8</div>
+              80
+            </div>
+            <div class="threshold-block" style="width: 16.67%; background-color: #7E57C2;">
+              <div class="threshold-score">100</div>
+              <div class="threshold-label">15</div>
+              100
+            </div>
+          </div>
+          
+          <table class="thresholds-table" id="thresholds-table">
+            <thead>
+              <tr>
+                <th>Valeur minimale</th>
+                <th>Valeur maximale</th>
+                <th>Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="thresholds-body">
+              <tr data-threshold="0">
+                <td>-∞</td>
+                <td>0</td>
+                <td>
+                  <input type="number" class="threshold-input" value="0" min="0" max="100" data-threshold="0">
+                </td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit-threshold" data-threshold="0">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-threshold" data-threshold="0">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-threshold="1">
+                <td>0</td>
+                <td>2</td>
+                <td>
+                  <input type="number" class="threshold-input" value="20" min="0" max="100" data-threshold="1">
+                </td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit-threshold" data-threshold="1">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-threshold" data-threshold="1">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-threshold="2">
+                <td>2</td>
+                <td>3</td>
+                <td>
+                  <input type="number" class="threshold-input" value="30" min="0" max="100" data-threshold="2">
+                </td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit-threshold" data-threshold="2">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-threshold" data-threshold="2">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-threshold="3">
+                <td>3</td>
+                <td>8</td>
+                <td>
+                  <input type="number" class="threshold-input" value="40" min="0" max="100" data-threshold="3">
+                </td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit-threshold" data-threshold="3">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-threshold" data-threshold="3">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-threshold="4">
+                <td>8</td>
+                <td>15</td>
+                <td>
+                  <input type="number" class="threshold-input" value="80" min="0" max="100" data-threshold="4">
+                </td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit-threshold" data-threshold="4">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-threshold" data-threshold="4">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-threshold="5">
+                <td>15</td>
+                <td>+∞</td>
+                <td>
+                  <input type="number" class="threshold-input" value="100" min="0" max="100" data-threshold="5">
+                </td>
+                <td>
+                  <div class="variable-actions">
+                    <button class="action-btn edit-threshold" data-threshold="5">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-threshold" data-threshold="5">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="tab-navigation">
+          <button class="nav-btn prev-btn" data-prev="tab1">
+            <i class="fas fa-arrow-left"></i> Étape précédente
+          </button>
+          <button class="nav-btn next-btn" data-next="tab3">
+            Étape suivante <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- TAB 3: PONDÉRATION DES VARIABLES -->
+      <div id="tab3" class="tab-content">
+        <div class="weight-card">
+          <div class="weight-header">
+            <div class="weight-title">
+              <div class="category-dot" style="background-color: var(--dynamism);"></div>
+              Dynamisme
+            </div>
+          </div>
+          
+          <table class="weight-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Pondération (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>(C.An-C.An-1)/C.An-1</td>
+                <td>
+                  <input type="number" class="weight-input" value="20" min="0" max="100" data-variable="growth" data-category="dynamism">
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td><span id="dynamism-total">20</span> %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="weight-card">
+          <div class="weight-header">
+            <div class="weight-title">
+              <div class="category-dot" style="background-color: var(--debt);"></div>
+              Endettement
+            </div>
+          </div>
+          
+          <table class="weight-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Pondération (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dettes/Total bilan</td>
+                <td>
+                  <input type="number" class="weight-input" value="30" min="0" max="100" data-variable="debt" data-category="debt">
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td><span id="debt-total">30</span> %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="weight-card">
+          <div class="weight-header">
+            <div class="weight-title">
+              <div class="category-dot" style="background-color: var(--profitability);"></div>
+              Rentabilité
+            </div>
+          </div>
+          
+          <table class="weight-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Pondération (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Résultat/CA</td>
+                <td>
+                  <input type="number" class="weight-input" value="30" min="0" max="100" data-variable="result" data-category="profitability">
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td><span id="profitability-total">30</span> %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="weight-card">
+          <div class="weight-header">
+            <div class="weight-title">
+              <div class="category-dot" style="background-color: var(--structure);"></div>
+              Structure
+            </div>
+          </div>
+          
+          <table class="weight-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Pondération (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>FP net/TOTAL BILAN</td>
+                <td>
+                  <input type="number" class="weight-input" value="10" min="0" max="100" data-variable="fpnet" data-category="structure">
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td><span id="structure-total">10</span> %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="weight-card">
+          <div class="weight-header">
+            <div class="weight-title">
+              <div class="category-dot" style="background-color: var(--liquidity);"></div>
+              Liquidité
+            </div>
+          </div>
+          
+          <table class="weight-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Pondération (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>(FDR*360)/CA</td>
+                <td>
+                  <input type="number" class="weight-input" value="10" min="0" max="100" data-variable="fdr" data-category="liquidity">
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td><span id="liquidity-total">10</span> %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="weight-distribution">
+          <h3>Distribution des pondérations</h3>
+          <div class="weight-bar">
+            <div class="weight-segment" style="width: 20%; background-color: var(--dynamism);" id="dynamism-segment">
+              20%
+            </div>
+            <div class="weight-segment" style="width: 30%; background-color: var(--debt);" id="debt-segment">
+              30%
+            </div>
+            <div class="weight-segment" style="width: 30%; background-color: var(--profitability);" id="profitability-segment">
+              30%
+            </div>
+            <div class="weight-segment" style="width: 10%; background-color: var(--structure);" id="structure-segment">
+              10%
+            </div>
+            <div class="weight-segment" style="width: 10%; background-color: var(--liquidity);" id="liquidity-segment">
+              10%
+            </div>
+          </div>
+          <div style="text-align: right; margin-top: 10px;">
+            Total : <span id="total-weight">100</span> %
+          </div>
+        </div>
+        
+        <div class="tab-navigation">
+          <button class="nav-btn prev-btn" data-prev="tab2">
+            <i class="fas fa-arrow-left"></i> Étape précédente
+          </button>
+          <button class="nav-btn next-btn" data-next="tab4">
+            Étape suivante <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- TAB 4: DÉFINITION DES GRILLES -->
+      <div id="tab4" class="tab-content">
+        <div class="grades-container">
+          <h3>Définition des grilles de notation</h3>
+          <p>Spécifiez les seuils de score pour chaque note.</p>
+          
+          <table class="grades-table" id="grades-table">
+            <thead>
+              <tr>
+                <th>Note</th>
+                <th>Score minimal</th>
+                <th>Proba de default (%)</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-grade="A">
+                <td>A</td>
+                <td>
+                  <input type="number" class="threshold-input" value="90" min="0" max="100" data-grade="A">
+                </td>
+                <td>
+                  <input type="number" class="threshold-input" value="0.65" min="0" max="100" step="0.1" data-risk="A">
+                </td>
+                <td>Très bon</td>
+              </tr>
+              <tr data-grade="B">
+                <td>B</td>
+                <td>
+                  <input type="number" class="threshold-input" value="80" min="0" max="100" data-grade="B">
+                </td>
+                <td>
+                  <input type="number" class="threshold-input" value="1.00" min="0" max="100" step="0.1" data-risk="B">
+                </td>
+                <td>Bon</td>
+              </tr>
+              <tr data-grade="C">
+                <td>C</td>
+                <td>
+                  <input type="number" class="threshold-input" value="70" min="0" max="100" data-grade="C">
+                </td>
+                <td>
+                  <input type="number" class="threshold-input" value="5.00" min="0" max="100" step="0.1" data-risk="C">
+                </td>
+                <td>Assez bon</td>
+              </tr>
+              <tr data-grade="D">
+                <td>D</td>
+                <td>
+                  <input type="number" class="threshold-input" value="65" min="0" max="100" data-grade="D">
+                </td>
+                <td>
+                  <input type="number" class="threshold-input" value="8.00" min="0" max="100" step="0.1" data-risk="D">
+                </td>
+                <td>Moyen</td>
+              </tr>
+              <tr data-grade="E">
+                <td>E</td>
+                <td>
+                  <input type="number" class="threshold-input" value="60" min="0" max="100" data-grade="E">
+                </td>
+                <td>
+                  <input type="number" class="threshold-input" value="12.5" min="0" max="100" step="0.1" data-risk="E">
+                </td>
+                <td>Médiocre</td>
+              </tr>
+              <tr data-grade="F">
+                <td>F</td>
+                <td>
+                  <input type="number" class="threshold-input" value="50" min="0" max="100" data-grade="F">
+                </td>
+                <td>
+                  <input type="number" class="threshold-input" value="25.00" min="0" max="100" step="0.1" data-risk="F">
+                </td>
+                <td>Mauvais</td>
+              </tr>
+              <tr data-grade="G">
+                <td>G</td>
+                <td>< 50</td>
+                <td>
+                  <input type="number" class="threshold-input" value="37.5" min="0" max="100" step="0.1" data-risk="G">
+                </td>
+                <td>Très mauvais</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="tab-navigation">
+          <button class="nav-btn prev-btn" data-prev="tab3">
+            <i class="fas fa-arrow-left"></i> Étape précédente
+          </button>
+          <button class="nav-btn next-btn" id="switch-to-notation">
+            Aller au calcul <i class="fas fa-calculator"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Section 2: Calcul de la note (onglet 5) -->
+  <div id="calculation-section" class="main-section">
+    <div class="section-title-container">
+      <h2 class="section-title">Calcul de la note</h2>
+      <p class="section-subtitle">Entrez les valeurs et calculez la note financière finale.</p>
+    </div>
+    
+    <!-- Add this to the calculation-section before the dashboard-layout -->
+    <div class="model-selector-container" style="margin-bottom: 20px; background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+          <i class="fas fa-file-alt" style="font-size: 24px; margin-right: 15px; color: var(--primary);"></i>
+          <div>
+            <h3 style="margin: 0; font-size: 18px;">Sélectionner un modèle</h3>
+            <p style="margin: 5px 0 0 0; color: #777; font-size: 14px;">Choisissez un modèle enregistré pour effectuer vos calculs</p>
+          </div>
+        </div>
+        <div style="flex: 0 0 300px;">
+          <select id="model-select" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;">
+            <option value="default">Modèle par défaut</option>
+            <!-- Other models will be added dynamically -->
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dashboard-layout">
+      <!-- Panneau gauche: saisie des valeurs -->
+      <div class="dashboard-panel input-panel">
+        <div class="panel-header">
+          <i class="fas fa-edit"></i> Saisie des données
+          <div class="panel-action">
+            <button class="action-button" id="recalculate-btn">
+              <i class="fas fa-sync-alt"></i> Recalculer
+            </button>
+          </div>
+        </div>
+        
+        <div class="panel-body">
+          <!-- Dynamisme -->
+          <div class="input-group-container">
+            <div class="input-group-header" style="background-color: var(--dynamism);">
+              <i class="fas fa-chart-line"></i> DYNAMISME
+            </div>
+            <div class="input-group">
+              <label for="growth-input">(C.An-C.An-1)/C.An-1</label>
+              <div class="input-with-controls">
+                <button class="value-control decrease"><i class="fas fa-minus"></i></button>
+                <div class="input-wrapper">
+                  <input type="number" id="growth-input" class="value-input" value="8" data-variable="growth" step="0.1">
+                  <span class="input-unit">%</span>
+                </div>
+                <button class="value-control increase"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Endettement -->
+          <div class="input-group-container">
+            <div class="input-group-header" style="background-color: var(--debt);">
+              <i class="fas fa-coins"></i> ENDETTEMENT
+            </div>
+            <div class="input-group">
+              <label for="debt-input">Dettes/Total bilan</label>
+              <div class="input-with-controls">
+                <button class="value-control decrease"><i class="fas fa-minus"></i></button>
+                <div class="input-wrapper">
+                  <input type="number" id="debt-input" class="value-input" value="18" data-variable="debt" step="0.1">
+                  <span class="input-unit">%</span>
+                </div>
+                <button class="value-control increase"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Rentabilité -->
+          <div class="input-group-container">
+            <div class="input-group-header" style="background-color: var(--profitability);">
+              <i class="fas fa-percentage"></i> RENTABILITÉ
+            </div>
+            <div class="input-group">
+              <label for="result-input">Résultat/CA</label>
+              <div class="input-with-controls">
+                <button class="value-control decrease"><i class="fas fa-minus"></i></button>
+                <div class="input-wrapper">
+                  <input type="number" id="result-input" class="value-input" value="13" data-variable="result" step="0.1">
+                  <span class="input-unit">%</span>
+                </div>
+                <button class="value-control increase"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Structure -->
+          <div class="input-group-container">
+            <div class="input-group-header" style="background-color: var(--structure);">
+              <i class="fas fa-building"></i> STRUCTURE
+            </div>
+            <div class="input-group">
+              <label for="fpnet-input">FP net/TOTAL BILAN</label>
+              <div class="input-with-controls">
+                <button class="value-control decrease"><i class="fas fa-minus"></i></button>
+                <div class="input-wrapper">
+                  <input type="number" id="fpnet-input" class="value-input" value="30" data-variable="fpnet" step="0.1">
+                  <span class="input-unit">%</span>
+                </div>
+                <button class="value-control increase"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Liquidité -->
+          <div class="input-group-container">
+            <div class="input-group-header" style="background-color: var(--liquidity);">
+              <i class="fas fa-tint"></i> LIQUIDITÉ
+            </div>
+            <div class="input-group">
+              <label for="fdr-input">(FDR*360)/CA</label>
+              <div class="input-with-controls">
+                <button class="value-control decrease"><i class="fas fa-minus"></i></button>
+                <div class="input-wrapper">
+                  <input type="number" id="fdr-input" class="value-input" value="105" data-variable="fdr" step="1">
+                  <span class="input-unit"></span>
+                </div>
+                <button class="value-control increase"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Panneau droit: résultats -->
+      <div class="dashboard-panel results-panel">
+        <div class="panel-header">
+          <i class="fas fa-chart-pie"></i> Résultats de la notation
+        </div>
+        
+        <div class="panel-body">
+          <!-- Note finale -->
+          <div class="grade-card">
+            <div class="grade-info">
+              <div class="grade-title">Note finale</div>
+              <div class="grade-description">Le score global est de <span id="final-score-display">53</span>/100</div>
+              <div class="grade-description">Proba de default: <span id="risk-percentage-display">0.4</span>%</div>
+            </div>
+            <div class="grade-display">
+              <div class="grade-value">B</div>
+            </div>
+          </div>
+          
+          <!-- Graphique de répartition -->
+          <div class="chart-container">
+            <h4><i class="fas fa-chart-bar"></i> Répartition des scores par catégorie</h4>
+            <div class="score-bars">
+              <div class="score-category">
+                <div class="category-label"><i class="fas fa-chart-line"></i> Dynamisme</div>
+                <div class="progress-container">
+                  <div class="progress-bar" id="dynamism-progress" style="width: 40%; background-color: var(--dynamism);">
+                    <span id="dynamism-total-score">8</span>
+                  </div>
+                </div>
+              </div>
+              <div class="score-category">
+                <div class="category-label"><i class="fas fa-coins"></i> Endettement</div>
+                <div class="progress-container">
+                  <div class="progress-bar" id="debt-progress" style="width: 50%; background-color: var(--debt);">
+                    <span id="debt-total-score">15</span>
+                  </div>
+                </div>
+              </div>
+              <div class="score-category">
+                <div class="category-label"><i class="fas fa-percentage"></i> Rentabilité</div>
+                <div class="progress-container">
+                  <div class="progress-bar" id="profitability-progress" style="width: 53%; background-color: var(--profitability);">
+                    <span id="profitability-total-score">16</span>
+                  </div>
+                </div>
+              </div>
+              <div class="score-category">
+                <div class="category-label"><i class="fas fa-building"></i> Structure</div>
+                <div class="progress-container">
+                  <div class="progress-bar" id="structure-progress" style="width: 100%; background-color: var(--structure);">
+                    <span id="structure-total-score">10</span>
+                  </div>
+                </div>
+              </div>
+              <div class="score-category">
+                <div class="category-label"><i class="fas fa-tint"></i> Liquidité</div>
+                <div class="progress-container">
+                  <div class="progress-bar" id="liquidity-progress" style="width: 40%; background-color: var(--liquidity);">
+                    <span id="liquidity-total-score">4</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tableau détaillé -->
+          <div class="details-container">
+            <h4><i class="fas fa-table"></i> Détails des calculs</h4>
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Valeur</th>
+                  <th>Score <i class="fas fa-info-circle" title="Score calculé selon les tranches définies"></i></th>
+                  <th>Poids</th>
+                  <th>Score pondéré</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dynamisme -->
+                <tr class="category-header">
+                  <td colspan="5"><i class="fas fa-chart-line"></i> DYNAMISME</td>
+                </tr>
+                <tr>
+                  <td>(C.An-C.An-1)/C.An-1</td>
+                  <td id="growth-value-display">8 %</td>
+                  <td><span id="growth-score" class="score-bubble">40</span></td>
+                  <td>20%</td>
+                  <td id="growth-weighted">8</td>
+                </tr>
+                
+                <!-- Endettement -->
+                <tr class="category-header">
+                  <td colspan="5"><i class="fas fa-coins"></i> ENDETTEMENT</td>
+                </tr>
+                <tr>
+                  <td>Dettes/Total bilan</td>
+                  <td id="debt-value-display">18 %</td>
+                  <td><span id="debt-score" class="score-bubble">50</span></td>
+                  <td>30%</td>
+                  <td id="debt-weighted">15</td>
+                </tr>
+                
+                <!-- Rentabilité -->
+                <tr class="category-header">
+                  <td colspan="5"><i class="fas fa-percentage"></i> RENTABILITÉ</td>
+                </tr>
+                <tr>
+                  <td>Résultat/CA</td>
+                  <td id="result-value-display">13 %</td>
+                  <td><span id="result-score" class="score-bubble">53</span></td>
+                  <td>30%</td>
+                  <td id="result-weighted">16</td>
+                </tr>
+                
+                <!-- Structure -->
+                <tr class="category-header">
+                  <td colspan="5"><i class="fas fa-building"></i> STRUCTURE</td>
+                </tr>
+                <tr>
+                  <td>FP net/TOTAL BILAN</td>
+                  <td id="fpnet-value-display">30 %</td>
+                  <td><span id="fpnet-score" class="score-bubble">96</span></td>
+                  <td>10%</td>
+                  <td id="fpnet-weighted">10</td>
+                </tr>
+                
+                <!-- Liquidité -->
+                <tr class="category-header">
+                  <td colspan="5"><i class="fas fa-tint"></i> LIQUIDITÉ</td>
+                </tr>
+                <tr>
+                  <td>(FDR*360)/CA</td>
+                  <td id="fdr-value-display">105</td>
+                  <td><span id="fdr-score" class="score-bubble">40</span></td>
+                  <td>10%</td>
+                  <td id="fdr-weighted">4</td>
+                </tr>
+                
+                <!-- Total -->
+                <tr class="result-total">
+                  <td colspan="4">SCORE TOTAL</td>
+                  <td id="final-score">53</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Formule de calcul -->
+          <div class="formula-container">
+            <h4><i class="fas fa-calculator"></i> Formule de calcul</h4>
+            <div class="calculation-formula">
+              Score total = Dynamisme + Endettement + Rentabilité + Structure + Liquidité
+            </div>
+            <div class="calculation-formula">
+              = <span id="dynamism-formula">8</span> + <span id="debt-formula">15</span> + <span id="profitability-formula">16</span> + <span id="structure-formula">10</span> + <span id="liquidity-formula">4</span> = <span id="total-formula">53</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-navigation">
+      <button class="nav-btn prev-btn" id="back-to-config">
+        <i class="fas fa-arrow-left"></i> Retour au paramétrage
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour ajouter/modifier une variable -->
+<div class="modal-overlay" id="variable-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="variable-modal-title">Ajouter une variable</div>
+      <button class="close-modal" id="close-variable-modal">&times;</button>
+    </div>
+    
+    <div class="form-group">
+      <label for="variable-name">Nom de la variable</label>
+      <input type="text" id="variable-name" placeholder="Ex: Taux de croissance">
+    </div>
+    
+    <div class="form-group">
+      <label for="variable-formula">Formule</label>
+      <input type="text" id="variable-formula" placeholder="Ex: (C.An-C.An-1)/C.An-1">
+    </div>
+    
+    <div class="form-group">
+      <label for="variable-category">Catégorie</label>
+      <select id="variable-category">
+        <option value="dynamism">Dynamisme</option>
+        <option value="debt">Endettement</option>
+        <option value="profitability">Rentabilité</option>
+        <option value="structure">Structure</option>
+        <option value="liquidity">Liquidité</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="variable-unit-input">Unité</label>
+      <input type="text" id="variable-unit-input" value="%" placeholder="Ex: %">
+    </div>
+    
+    <!-- Champs masqués pour maintenir la fonctionnalité -->
+    <div class="form-group" style="display: none;">
+      <label for="variable-value">Valeur initiale</label>
+      <div class="input-unit">
+        <input type="number" id="variable-value" value="0" step="0.1">
+        <span class="unit" id="variable-unit">%</span>
+      </div>
+    </div>
+    
+    <div class="form-group" style="display: none;">
+      <label for="variable-weight">Pondération (%)</label>
+      <input type="number" id="variable-weight" value="20" min="0" max="100">
+    </div>
+    
+    <div class="form-actions">
+      <button class="cancel-btn" id="variable-cancel">Annuler</button>
+      <button class="save-btn" id="variable-save">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour ajouter/modifier une tranche -->
+<div class="modal-overlay" id="threshold-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Ajouter une tranche</div>
+      <button class="close-modal" id="close-threshold-modal">&times;</button>
+    </div>
+    
+    <div class="form-group">
+      <label for="min-value">Valeur minimale</label>
+      <div class="input-unit">
+        <input type="number" id="min-value" step="0.1">
+        <span class="unit" id="threshold-unit">%</span>
+      </div>
+      <small>Laissez vide pour -∞ (moins l'infini)</small>
+    </div>
+    
+    <div class="form-group">
+      <label for="max-value">Valeur maximale</label>
+      <div class="input-unit">
+        <input type="number" id="max-value" step="0.1">
+        <span class="unit" id="threshold-unit2">%</span>
+      </div>
+      <small>Laissez vide pour +∞ (plus l'infini)</small>
+    </div>
+    
+    <div class="form-group">
+      <label for="threshold-score">Score</label>
+      <input type="number" id="threshold-score" min="0" max="100" value="50">
+    </div>
+    
+    <div class="form-actions">
+      <button class="cancel-btn" id="threshold-cancel">Annuler</button>
+      <button class="save-btn" id="threshold-save">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour sauvegarder les modèles -->
+<div class="modal-overlay" id="save-model-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Enregistrer le modèle</div>
+      <button class="close-modal" id="close-save-model-modal">&times;</button>
+    </div>
+    
+    <div class="form-group">
+      <label for="model-name">Nom du modèle</label>
+      <input type="text" id="model-name" placeholder="Ex: Modèle PME 2025">
+    </div>
+    
+    <div class="form-group">
+      <label for="model-description">Description (optionnelle)</label>
+      <textarea id="model-description" rows="3" placeholder="Décrivez brièvement ce modèle..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; resize: vertical;"></textarea>
+    </div>
+    
+    <div class="form-actions">
+      <button class="cancel-btn" id="save-model-cancel">Annuler</button>
+      <button class="save-btn" id="save-model-save">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour gérer les modèles -->
+<div class="modal-overlay" id="manage-models-modal">
+  <div class="modal" style="max-width: 800px;">
+    <div class="modal-header">
+      <div class="modal-title">Gestion des modèles</div>
+      <button class="close-modal" id="close-manage-models-modal">&times;</button>
+    </div>
+    
+    <div style="max-height: 400px; overflow-y: auto;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+          <tr style="background-color: #f5f5f5;">
+            <th style="padding: 12px 15px; text-align: left; border: 1px solid #ddd;">Nom</th>
+            <th style="padding: 12px 15px; text-align: left; border: 1px solid #ddd;">Description</th>
+            <th style="padding: 12px 15px; text-align: left; border: 1px solid #ddd;">Date de création</th>
+            <th style="padding: 12px 15px; text-align: center; border: 1px solid #ddd;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="models-list">
+          <!-- Models will be added dynamically -->
+          <tr>
+            <td colspan="4" style="padding: 20px; text-align: center; color: #777;">Aucun modèle enregistré</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
+      <button id="export-all-models" class="action-button" style="background-color: var(--secondary);">
+        <i class="fas fa-file-export"></i> Exporter tous les modèles
+      </button>
+      <div style="margin-top: 15px;">
+        <label for="import-models-file" style="display: block; margin-bottom: 10px;">Importer des modèles</label>
+        <input type="file" id="import-models-file" accept=".json" style="display: block;">
+      </div>
+    </div>
+    
+    <div class="form-actions" style="margin-top: 20px;">
+      <button class="cancel-btn" id="manage-models-close">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-logo">GGRG Système Risk Management</div>
+    </div>
+    <div class="copyright">© 2025 Formation Academy</div>
+  </div>
+</footer>
+
+<script>
+  // Données des catégories
+  const categories = {
+    dynamism: {
+      name: "Dynamisme",
+      color: "#c0392b"
+    },
+    debt: {
+      name: "Endettement",
+      color: "#e74c3c"
+    },
+    profitability: {
+      name: "Rentabilité",
+      color: "#27ae60"
+    },
+    structure: {
+      name: "Structure",
+      color: "#2980b9"
+    },
+    liquidity: {
+      name: "Liquidité",
+      color: "#8e44ad"
+    }
+  };
+
+  // Données des variables
+  let variables = {
+    growth: {
+      name: "(C.An-C.An-1)/C.An-1",
+      description: "Taux de croissance",
+      formula: "(C.An-C.An-1)/C.An-1",
+      category: "dynamism",
+      value: 8,
+      unit: "%",
+      weight: 20,
+      thresholds: [
+        { min: -Infinity, max: 0, score: 0 },
+        { min: 0, max: 2, score: 20 },
+        { min: 2, max: 3, score: 30 },
+        { min: 3, max: 8, score: 40 },
+        { min: 8, max: 15, score: 80 },
+        { min: 15, max: Infinity, score: 100 }
+      ]
+    },
+    debt: {
+      name: "Dettes/Total bilan",
+      description: "Ratio d'endettement",
+      formula: "Dettes/Total bilan",
+      category: "debt",
+      value: 18,
+      unit: "%",
+      weight: 30,
+      thresholds: [
+        { min: 0, max: 20, score: 100 },
+        { min: 20, max: 40, score: 80 },
+        { min: 40, max: 60, score: 50 },
+        { min: 60, max: 80, score: 20 },
+        { min: 80, max: Infinity, score: 0 }
+      ]
+    },
+    result: {
+      name: "Résultat/CA",
+      description: "Ratio de rentabilité",
+      formula: "Résultat/CA",
+      category: "profitability",
+      value: 13,
+      unit: "%",
+      weight: 30,
+      thresholds: [
+        { min: -Infinity, max: 0, score: 0 },
+        { min: 0, max: 5, score: 20 },
+        { min: 5, max: 10, score: 40 },
+        { min: 10, max: 15, score: 60 },
+        { min: 15, max: 20, score: 80 },
+        { min: 20, max: Infinity, score: 100 }
+      ]
+    },
+    fpnet: {
+      name: "FP net/TOTAL BILAN",
+      description: "Ratio de structure",
+      formula: "FP net/TOTAL BILAN",
+      category: "structure",
+      value: 30,
+      unit: "%",
+      weight: 10,
+      thresholds: [
+        { min: -Infinity, max: 0, score: 0 },
+        { min: 0, max: 10, score: 20 },
+        { min: 10, max: 20, score: 60 },
+        { min: 20, max: 30, score: 80 },
+        { min: 30, max: Infinity, score: 100 }
+      ]
+    },
+    fdr: {
+      name: "(FDR*360)/CA",
+      description: "Ratio de liquidité",
+      formula: "(FDR*360)/CA",
+      category: "liquidity",
+      value: 105,
+      unit: "",
+      weight: 10,
+      thresholds: [
+        { min: -Infinity, max: 0, score: 0 },
+        { min: 0, max: 60, score: 20 },
+        { min: 60, max: 90, score: 40 },
+        { min: 90, max: 120, score: 60 },
+        { min: 120, max: 180, score: 80 },
+        { min: 180, max: Infinity, score: 100 }
+      ]
+    }
+  };
+
+  // Données des grades - synchronisées avec le tableau dans l'onglet 4
+  let grades = [
+    { name: "A", threshold: 90, risk: 0.65, description: "Très bon" },
+    { name: "B", threshold: 80, risk: 1.00, description: "Bon" },
+    { name: "C", threshold: 70, risk: 5.00, description: "Assez bon" },
+    { name: "D", threshold: 65, risk: 8.00, description: "Moyen" },
+    { name: "E", threshold: 60, risk: 12.5, description: "Médiocre" },
+    { name: "F", threshold: 50, risk: 25.00, description: "Mauvais" },
+    { name: "G", threshold: 0, risk: 37.5, description: "Très mauvais" }
+  ];
+
+  // Variables globales de l'interface
+  let currentTab = "tab1";
+  let currentCategory = "dynamism";
+  let currentVariable = "growth";
+  let isEditingVariable = false;
+  let isEditingThreshold = false;
+  let currentThresholdIndex = -1;
+  let currentSection = "configuration-section";
+
+  // Couleurs pour les tranches
+  const thresholdColors = [
+    "#FF5252", "#FFA726", "#66BB6A", "#42A5F5", "#5C6BC0", "#7E57C2"
+  ];
+
+  // Fonction pour changer de section principale
+  function changeMainSection(sectionId) {
+    // Masquer toutes les sections
+    document.querySelectorAll(".main-section").forEach(section => {
+      section.classList.remove("active");
+    });
+    
+    // Afficher la section sélectionnée
+    document.getElementById(sectionId).classList.add("active");
+    
+    // Mettre à jour la navigation
+    document.querySelectorAll(".main-nav-item").forEach(item => {
+      item.classList.remove("active");
+      if (item.dataset.section === sectionId) {
+        item.classList.add("active");
+      }
+    });
+    
+    // Mettre à jour la section courante
+    currentSection = sectionId;
+    
+    // Actions spécifiques à chaque section
+    if (sectionId === "calculation-section") {
+      // Générer dynamiquement l'interface de saisie
+      updateInputInterface();
+      // Calculer la note finale quand on entre dans la section de calcul
+      calculateFinalGrade();
+    }
+  }
+
+  // Fonction pour changer d'onglet
+  function changeTab(tabId) {
+    // Masquer tous les onglets
+    document.querySelectorAll(".tab-content").forEach(tab => {
+      tab.classList.remove("active");
+    });
+    
+    // Afficher l'onglet sélectionné
+    document.getElementById(tabId).classList.add("active");
+    
+    // Mettre à jour la navigation
+    document.querySelectorAll(".tab-item").forEach(item => {
+      item.classList.remove("active");
+      if (item.dataset.tab === tabId) {
+        item.classList.add("active");
+      }
+    });
+    
+    // Mettre à jour l'onglet courant
+    currentTab = tabId;
+    
+    // Actions spécifiques à chaque onglet
+    if (tabId === "tab2") {
+      updateThresholdsDisplay();
+    } else if (tabId === "tab3") {
+      updateWeightsDisplay();
+    } else if (tabId === "tab4") {
+      // Si nous entrons dans l'onglet 4, nous devons nous assurer que les valeurs de grade sont correctes
+      updateGradesFromInputs();
+    }
+  }
+
+  // Fonction pour mettre à jour les grades à partir des inputs de l'onglet 4
+  function updateGradesFromInputs() {
+    // Récupérer tous les inputs de grade threshold
+    document.querySelectorAll('input[data-grade]').forEach(input => {
+      const gradeName = input.dataset.grade;
+      const threshold = parseFloat(input.value);
+      const gradeIndex = grades.findIndex(g => g.name === gradeName);
+      if (gradeIndex !== -1) {
+        grades[gradeIndex].threshold = threshold;
+      }
+    });
+    
+    // Récupérer tous les inputs de probabilité de défaut
+    document.querySelectorAll('input[data-risk]').forEach(input => {
+      const gradeName = input.dataset.risk;
+      const risk = parseFloat(input.value);
+      const gradeIndex = grades.findIndex(g => g.name === gradeName);
+      if (gradeIndex !== -1) {
+        grades[gradeIndex].risk = risk;
+      }
+    });
+  }
+
+  // Ecouter les changements dans les valeurs des grades
+  function setupGradeInputListeners() {
+    // Pour les seuils de score
+    document.querySelectorAll('input[data-grade]').forEach(input => {
+      input.addEventListener('change', function() {
+        const gradeName = this.dataset.grade;
+        const threshold = parseFloat(this.value);
+        const gradeIndex = grades.findIndex(g => g.name === gradeName);
+        if (gradeIndex !== -1) {
+          grades[gradeIndex].threshold = threshold;
+        }
+      });
+    });
+    
+    // Pour les probabilités de défaut
+    document.querySelectorAll('input[data-risk]').forEach(input => {
+      input.addEventListener('change', function() {
+        const gradeName = this.dataset.risk;
+        const risk = parseFloat(this.value);
+        const gradeIndex = grades.findIndex(g => g.name === gradeName);
+        if (gradeIndex !== -1) {
+          grades[gradeIndex].risk = risk;
+        }
+      });
+    });
+  }
+
+  // Fonction pour changer de catégorie
+  function changeCategory(categoryId) {
+    // Mettre à jour la catégorie courante
+    currentCategory = categoryId;
+    
+    // Mettre à jour les cartes de catégorie
+    document.querySelectorAll(".category-card").forEach(card => {
+      card.classList.remove("active");
+      if (card.dataset.category === categoryId) {
+        card.classList.add("active");
+      }
+    });
+    
+    // Mettre à jour le titre et l'indicateur de couleur
+    document.querySelector(".section-title").innerHTML = `
+      <div class="category-indicator" style="background-color: ${categories[categoryId].color};"></div>
+      Variables de ${categories[categoryId].name}
+    `;
+    
+    // Charger les variables de la catégorie
+    loadCategoryVariables(categoryId);
+  }
+
+  // Fonction pour charger les variables d'une catégorie
+  function loadCategoryVariables(categoryId) {
+    const tableBody = document.getElementById("variables-body");
+    tableBody.innerHTML = "";
+    
+    // Filtrer les variables par catégorie
+    const categoryVars = Object.entries(variables).filter(([id, data]) => data.category === categoryId);
+    
+    // Créer les lignes du tableau
+    categoryVars.forEach(([id, data]) => {
+      const row = document.createElement("tr");
+      row.dataset.variable = id;
+      
+      row.innerHTML = `
+        <td>${data.name}</td>
+        <td>${data.description}</td>
+        <td>
+          <div class="variable-actions">
+            <button class="action-btn edit" data-variable="${id}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete" data-variable="${id}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      
+      tableBody.appendChild(row);
+    });
+    
+    // Ajouter les écouteurs d'événement      
+    document.querySelectorAll(".action-btn.edit").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const varId = this.dataset.variable;
+        openVariableModal(true, varId);
+      });
+    });
+    
+    document.querySelectorAll(".action-btn.delete").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const varId = this.dataset.variable;
+        if (confirm(`Êtes-vous sûr de vouloir supprimer la variable "${variables[varId].name}" ?`)) {
+          deleteVariable(varId);
+        }
+      });
+    });
+    
+    // Mettre à jour les compteurs
+    updateCategoryCounters();
+  }
+
+  // Fonction pour mettre à jour les compteurs de variables par catégorie
+  function updateCategoryCounters() {
+    Object.keys(categories).forEach(categoryId => {
+      const count = Object.values(variables).filter(v => v.category === categoryId).length;
+      const countElement = document.querySelector(`.category-card[data-category="${categoryId}"] .category-count`);
+      if (countElement) {
+        countElement.textContent = `${count} variable${count > 1 ? 's' : ''}`;
+      }
+    });
+  }
+
+  // Fonction pour ouvrir le modal d'ajout/modification de variable
+  function openVariableModal(isEdit = false, variableId = null) {
+    isEditingVariable = isEdit;
+    
+    const modal = document.getElementById("variable-modal");
+    const title = document.getElementById("variable-modal-title");
+    
+    if (isEdit && variableId) {
+      title.textContent = "Modifier la variable";
+      const variable = variables[variableId];
+      
+      document.getElementById("variable-name").value = variable.name;
+      document.getElementById("variable-formula").value = variable.formula;
+      document.getElementById("variable-category").value = variable.category;
+      document.getElementById("variable-value").value = variable.value;
+      document.getElementById("variable-unit-input").value = variable.unit;
+      document.getElementById("variable-unit").textContent = variable.unit;
+      document.getElementById("variable-weight").value = variable.weight;
+      
+      document.getElementById("variable-save").dataset.variableId = variableId;
+    } else {
+      title.textContent = "Ajouter une variable";
+      document.getElementById("variable-name").value = "";
+      document.getElementById("variable-formula").value = "";
+      document.getElementById("variable-category").value = currentCategory;
+      document.getElementById("variable-value").value = "0";
+      document.getElementById("variable-unit-input").value = "%";
+      document.getElementById("variable-unit").textContent = "%";
+      document.getElementById("variable-weight").value = "20";
+      
+      delete document.getElementById("variable-save").dataset.variableId;
+    }
+    
+    modal.style.display = "flex";
+  }
+
+  // Fonction pour fermer le modal d'ajout/modification de variable
+  function closeVariableModal() {
+    document.getElementById("variable-modal").style.display = "none";
+  }
+
+  // Fonction pour sauvegarder une variable
+  function saveVariable() {
+    const name = document.getElementById("variable-name").value.trim();
+    const description = name; // Utiliser le nom comme description par défaut
+    const formula = document.getElementById("variable-formula").value.trim();
+    const category = document.getElementById("variable-category").value;
+    const value = parseFloat(document.getElementById("variable-value").value);
+    const unit = document.getElementById("variable-unit-input").value.trim();
+    const weight = parseInt(document.getElementById("variable-weight").value);
+    
+    if (!name || !formula) {
+      alert("Veuillez remplir tous les champs obligatoires.");
+      return;
+    }
+    
+    if (isEditingVariable) {
+      const variableId = document.getElementById("variable-save").dataset.variableId;
+      
+      // Mise à jour de la variable existante
+      variables[variableId].name = name;
+      variables[variableId].description = description;
+      variables[variableId].formula = formula;
+      variables[variableId].value = value;
+      variables[variableId].unit = unit;
+      variables[variableId].weight = weight;
+      
+      // Si la catégorie a changé, déplacer la variable
+      if (variables[variableId].category !== category) {
+        variables[variableId].category = category;
+        
+        // Si on est sur l'onglet de la catégorie d'origine, recharger
+        if (currentCategory === category || currentCategory === variables[variableId].category) {
+          changeCategory(currentCategory);
+        }
+      } else {
+        // Recharger les variables de la catégorie courante
+        loadCategoryVariables(currentCategory);
+      }
+    } else {
+      // Créer un nouvel ID unique
+      const variableId = 'var_' + Date.now();
+      
+      // Créer la nouvelle variable
+      variables[variableId] = {
+        name: name,
+        description: description,
+        formula: formula,
+        category: category,
+        value: value,
+        unit: unit,
+        weight: weight,
+        thresholds: [
+          { min: -Infinity, max: 0, score: 0 },
+          { min: 0, max: 50, score: 50 },
+          { min: 50, max: Infinity, score: 100 }
+        ]
+      };
+      
+      // Si on est sur l'onglet de la nouvelle catégorie, recharger
+      if (currentCategory === category) {
+        loadCategoryVariables(currentCategory);
+      }
+    }
+    
+    // Mettre à jour les compteurs
+    updateCategoryCounters();
+    
+    // Fermer le modal
+    closeVariableModal();
+    
+    // Mettre à jour les menus déroulants
+    updateVariableSelectors();
+  }
+
+  // Fonction pour supprimer une variable
+  function deleteVariable(variableId) {
+    const category = variables[variableId].category;
+    
+    // Supprimer la variable
+    delete variables[variableId];
+    
+    // Recharger les variables de la catégorie
+    if (currentCategory === category) {
+      loadCategoryVariables(currentCategory);
+    }
+    
+    // Mettre à jour les compteurs
+    updateCategoryCounters();
+    
+    // Mettre à jour les menus déroulants
+    updateVariableSelectors();
+  }
+
+  // Fonction pour mettre à jour les menus déroulants de variables
+  function updateVariableSelectors() {
+    const selector = document.getElementById("modalite-variable-select");
+    if (!selector) return;
+    
+    selector.innerHTML = "";
+    
+    // Trier les variables par catégorie
+    const sortedVariables = Object.entries(variables).sort((a, b) => {
+      if (a[1].category !== b[1].category) {
+        return a[1].category.localeCompare(b[1].category);
+      }
+      return a[1].name.localeCompare(b[1].name);
+    });
+    
+    // Créer les options
+    sortedVariables.forEach(([id, data]) => {
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = `${data.name} - ${categories[data.category].name}`;
+      selector.appendChild(option);
+    });
+    
+    // Sélectionner la variable courante
+    selector.value = currentVariable;
+  }
+
+  // Fonction pour mettre à jour l'affichage des tranches
+  function updateThresholdsDisplay() {
+    const variable = variables[currentVariable];
+    
+    // Mettre à jour le titre
+    const thresholdsTitle = document.querySelector(".thresholds-title");
+    if (thresholdsTitle) {
+      thresholdsTitle.textContent = `Tranches de conversion en score pour ${variable.name}`;
+    }
+    
+    // Mettre à jour le tableau des tranches
+    const tableBody = document.getElementById("thresholds-body");
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = "";
+    
+    variable.thresholds.forEach((threshold, index) => {
+      const row = document.createElement("tr");
+      row.dataset.threshold = index;
+      
+      row.innerHTML = `
+        <td>${threshold.min === -Infinity ? "-∞" : threshold.min}</td>
+        <td>${threshold.max === Infinity ? "+∞" : threshold.max}</td>
+        <td>
+          <input type="number" class="threshold-input" value="${threshold.score}" min="0" max="100" data-threshold="${index}">
+        </td>
+        <td>
+          <div class="variable-actions">
+            <button class="action-btn edit-threshold" data-threshold="${index}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete-threshold" data-threshold="${index}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      
+      tableBody.appendChild(row);
+    });
+    
+    // Ajouter les écouteurs d'événement
+    document.querySelectorAll(".threshold-input").forEach(input => {
+      input.addEventListener("change", function() {
+        const index = parseInt(this.dataset.threshold);
+        variables[currentVariable].thresholds[index].score = parseInt(this.value);
+        updateVisualThresholds();
+      });
+    });
+    
+    document.querySelectorAll(".edit-threshold").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const index = parseInt(this.dataset.threshold);
+        openThresholdModal(index);
+      });
+    });
+    
+    document.querySelectorAll(".delete-threshold").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const index = parseInt(this.dataset.threshold);
+        if (confirm("Êtes-vous sûr de vouloir supprimer cette tranche ?")) {
+          deleteThreshold(index);
+        }
+      });
+    });
+    
+    // Mettre à jour la visualisation
+    updateVisualThresholds();
+  }
+
+  // Fonction pour mettre à jour la visualisation des tranches
+  function updateVisualThresholds() {
+    const container = document.getElementById("visual-thresholds");
+    if (!container) return;
+    
+    container.innerHTML = "";
+    
+    const variable = variables[currentVariable];
+    const thresholds = variable.thresholds;
+    
+    // Déterminer les limites min/max pour le calcul des largeurs
+    let minValue = thresholds[0].min === -Infinity ? 
+                  (thresholds[1] ? thresholds[1].min - 10 : -10) : thresholds[0].min;
+    
+    let maxValue = thresholds[thresholds.length-1].max === Infinity ? 
+                  (thresholds[thresholds.length-2] ? thresholds[thresholds.length-2].max + 10 : 10) : 
+                  thresholds[thresholds.length-1].max;
+    
+    // Pour les valeurs négatives
+    if (minValue < 0) {
+      maxValue = Math.max(maxValue, Math.abs(minValue));
+    }
+    
+    const totalRange = maxValue - minValue;
+    
+    // Créer les blocs visuels
+    thresholds.forEach((threshold, index) => {
+      const start = threshold.min === -Infinity ? minValue : threshold.min;
+      const end = threshold.max === Infinity ? maxValue : threshold.max;
+      
+      const width = ((end - start) / totalRange) * 100;
+      
+      const block = document.createElement("div");
+      block.className = "threshold-block";
+      block.style.width = `${width}%`;
+      block.style.backgroundColor = thresholdColors[index % thresholdColors.length];
+      block.textContent = threshold.score;
+      
+      // Ajouter les étiquettes
+      const startLabel = document.createElement("div");
+      startLabel.className = "threshold-label";
+      startLabel.textContent = threshold.min === -Infinity ? "-∞" : threshold.min;
+      startLabel.style.left = "0";
+      block.appendChild(startLabel);
+      
+      if (index < thresholds.length - 1 && threshold.max !== Infinity) {
+        const endLabel = document.createElement("div");
+        endLabel.className = "threshold-label";
+        endLabel.textContent = threshold.max;
+        endLabel.style.right = "0";
+        block.appendChild(endLabel);
+      }
+      
+      const scoreLabel = document.createElement("div");
+      scoreLabel.className = "threshold-score";
+      scoreLabel.textContent = threshold.score;
+      block.appendChild(scoreLabel);
+      
+      container.appendChild(block);
+    });
+    
+    // Ajouter un indicateur pour la valeur actuelle
+    const value = parseFloat(variable.value);
+    const position = ((value - minValue) / totalRange) * 100;
+    
+    if (position >= 0 && position <= 100) {
+      const indicator = document.createElement("div");
+      indicator.style.position = "absolute";
+      indicator.style.left = `${position}%`;
+      indicator.style.top = "0";
+      indicator.style.height = "100%";
+      indicator.style.width = "2px";
+      indicator.style.backgroundColor = "red";
+      indicator.style.zIndex = "10";
+      
+      const indicatorDot = document.createElement("div");
+      indicatorDot.style.position = "absolute";
+      indicatorDot.style.left = "-4px";
+      indicatorDot.style.top = "-4px";
+      indicatorDot.style.width = "10px";
+      indicatorDot.style.height = "10px";
+      indicatorDot.style.backgroundColor = "red";
+      indicatorDot.style.borderRadius = "50%";
+      
+      indicator.appendChild(indicatorDot);
+      
+      const indicatorLabel = document.createElement("div");
+      indicatorLabel.style.position = "absolute";
+      indicatorLabel.style.left = "0";
+      indicatorLabel.style.top = "-35px";
+      indicatorLabel.style.transform = "translateX(-50%)";
+      indicatorLabel.style.backgroundColor = "red";
+      indicatorLabel.style.color = "white";
+      indicatorLabel.style.padding = "3px 8px";
+      indicatorLabel.style.borderRadius = "4px";
+      indicatorLabel.style.fontSize = "12px";
+      indicatorLabel.style.whiteSpace = "nowrap";
+      indicatorLabel.textContent = `${value}${variable.unit}`;
+      
+      indicator.appendChild(indicatorLabel);
+      container.appendChild(indicator);
+    }
+  }
+
+  // Fonction pour ouvrir le modal d'ajout/modification de tranche
+  function openThresholdModal(index = -1) {
+    isEditingThreshold = index !== -1;
+    currentThresholdIndex = index;
+    
+    const modal = document.getElementById("threshold-modal");
+    const title = modal.querySelector(".modal-title");
+    
+    // Mettre à jour l'unité
+    const unit = variables[currentVariable].unit;
+    document.getElementById("threshold-unit").textContent = unit;
+    document.getElementById("threshold-unit2").textContent = unit;
+    
+    if (isEditingThreshold) {
+      title.textContent = "Modifier la tranche";
+      const threshold = variables[currentVariable].thresholds[index];
+      
+      document.getElementById("min-value").value = threshold.min === -Infinity ? "" : threshold.min;
+      document.getElementById("max-value").value = threshold.max === Infinity ? "" : threshold.max;
+      document.getElementById("threshold-score").value = threshold.score;
+    } else {
+      title.textContent = "Ajouter une tranche";
+      document.getElementById("min-value").value = "";
+      document.getElementById("max-value").value = "";
+      document.getElementById("threshold-score").value = "50";
+    }
+    
+    modal.style.display = "flex";
+  }
+
+  // Fonction pour fermer le modal d'ajout/modification de tranche
+  function closeThresholdModal() {
+    document.getElementById("threshold-modal").style.display = "none";
+  }
+
+  // Fonction pour sauvegarder une tranche
+  function saveThreshold() {
+    let min = document.getElementById("min-value").value;
+    let max = document.getElementById("max-value").value;
+    const score = parseInt(document.getElementById("threshold-score").value);
+    
+    // Validation
+    if ((min === "" && max === "") || score < 0 || score > 100) {
+      alert("Veuillez remplir correctement les champs.");
+      return;
+    }
+    
+    // Conversion des valeurs
+    min = min === "" ? -Infinity : parseFloat(min);
+    max = max === "" ? Infinity : parseFloat(max);
+    
+    if (min !== -Infinity && max !== Infinity && min >= max) {
+      alert("La valeur minimale doit être inférieure à la valeur maximale.");
+      return;
+    }
+    
+    // Mise à jour ou ajout de la tranche
+    if (isEditingThreshold) {
+      variables[currentVariable].thresholds[currentThresholdIndex] = { min, max, score };
+    } else {
+      // Ajouter la nouvelle tranche
+      variables[currentVariable].thresholds.push({ min, max, score });
+      
+      // Trier les tranches par ordre croissant
+      variables[currentVariable].thresholds.sort((a, b) => {
+        if (a.min === -Infinity) return -1;
+        if (b.min === -Infinity) return 1;
+        return a.min - b.min;
+      });
+    }
+    
+    // Mettre à jour l'interface
+    updateThresholdsDisplay();
+    
+    // Fermer le modal
+    closeThresholdModal();
+  }
+
+  // Fonction pour supprimer une tranche
+  function deleteThreshold(index) {
+    const thresholds = variables[currentVariable].thresholds;
+    
+    if (thresholds.length <= 1) {
+      alert("Vous ne pouvez pas supprimer toutes les tranches.");
+      return;
+    }
+    
+    // Supprimer la tranche
+    thresholds.splice(index, 1);
+    
+    // Mettre à jour l'interface
+    updateThresholdsDisplay();
+  }
+
+  // Fonction pour mettre à jour l'affichage des poids
+  function updateWeightsDisplay() {
+    // Mettre à jour les barres de poids
+    Object.keys(categories).forEach(categoryId => {
+      const categoryVars = Object.values(variables).filter(v => v.category === categoryId);
+      const totalWeight = categoryVars.reduce((sum, v) => sum + v.weight, 0);
+      
+      const totalElement = document.getElementById(`${categoryId}-total`);
+      if (totalElement) {
+        totalElement.textContent = totalWeight;
+      }
+      
+      const segment = document.getElementById(`${categoryId}-segment`);
+      if (segment) {
+        segment.style.width = `${totalWeight}%`;
+        segment.textContent = `${totalWeight}%`;
+      }
+    });
+    
+    // Mettre à jour le poids total
+    const totalWeight = Object.values(variables).reduce((sum, v) => sum + v.weight, 0);
+    const totalWeightElement = document.getElementById("total-weight");
+    if (totalWeightElement) {
+      totalWeightElement.textContent = totalWeight;
+    }
+  }
+
+  // Fonction pour calculer le score d'une variable
+  function calculateVariableScore(variableId) {
+    const variable = variables[variableId];
+    const value = variable.value;
+    
+    // Trouver la tranche correspondante
+    const threshold = variable.thresholds.find(t => 
+      (value >= t.min || t.min === -Infinity) && 
+      (value < t.max || t.max === Infinity)
+    );
+    
+    return threshold ? threshold.score : 0;
+  }
+
+  // Fonction pour calculer la note finale
+  function calculateFinalGrade() {
+    // Assurons-nous que les données des grades sont à jour
+    updateGradesFromInputs();
+    
+    // Calculer les scores par catégorie
+    const categoryScores = {};
+    let totalScore = 0;
+    
+    Object.keys(categories).forEach(categoryId => {
+      let categoryScore = 0;
+      
+      // Calculer le score de chaque variable de la catégorie
+      Object.entries(variables).filter(([id, data]) => data.category === categoryId).forEach(([id, data]) => {
+        const score = calculateVariableScore(id);
+        const weightedScore = Math.round((score * data.weight) / 100);
+        categoryScore += weightedScore;
+        
+        // Mettre à jour le tableau des résultats
+        if (document.getElementById(`${id}-score`)) {
+          document.getElementById(`${id}-score`).textContent = score;
+        }
+        if (document.getElementById(`${id}-weighted`)) {
+          document.getElementById(`${id}-weighted`).textContent = weightedScore;
+        }
+      });
+      
+      categoryScores[categoryId] = categoryScore;
+      totalScore += categoryScore;
+      
+      // Mettre à jour le tableau des résultats
+      const totalScoreElements = document.querySelectorAll(`#${categoryId}-total-score`);
+      totalScoreElements.forEach(el => {
+        el.textContent = categoryScore;
+      });
+      
+      // Mettre à jour la formule
+      if (document.getElementById(`${categoryId}-formula`)) {
+        document.getElementById(`${categoryId}-formula`).textContent = categoryScore;
+      }
+    });
+    
+    // Mettre à jour le score final
+    const finalScoreElements = document.querySelectorAll("#final-score, #total-formula");
+    finalScoreElements.forEach(el => {
+      el.textContent = totalScore;
+    });
+    
+    // Mettre à jour l'affichage du score final dans la carte
+    const finalScoreDisplayElements = document.querySelectorAll("#final-score-display");
+    finalScoreDisplayElements.forEach(el => {
+      el.textContent = totalScore;
+    });
+    
+    // Déterminer la note en fonction du score
+    let grade = grades.find(g => totalScore >= g.threshold) || grades[grades.length - 1];
+    
+    // Mettre à jour l'affichage de la note
+    const gradeElements = document.querySelectorAll(".grade-value");
+    gradeElements.forEach(el => {
+      if (el.closest(".grade-display")) {
+        el.textContent = grade.name;
+        
+        // Update grade color
+        if (grade.name === "A") {
+          el.style.backgroundColor = "var(--grade-a)";
+        } else if (grade.name === "B") {
+          el.style.backgroundColor = "var(--grade-b)";
+        } else if (grade.name === "C") {
+          el.style.backgroundColor = "var(--grade-c)";
+        } else if (grade.name === "D") {
+          el.style.backgroundColor = "var(--grade-d)";
+        } else if (grade.name === "E") {
+          el.style.backgroundColor = "var(--grade-e)";
+        } else if (grade.name === "F") {
+          el.style.backgroundColor = "var(--grade-f)";
+        } else {
+          el.style.backgroundColor = "var(--grade-g)";
+        }
+      }
+    });
+    
+    // Mise à jour importante: afficher la probabilité de défaut
+    const riskPercentageDisplay = document.getElementById("risk-percentage-display");
+    if (riskPercentageDisplay) {
+      riskPercentageDisplay.textContent = grade.risk;
+    }
+    
+    // Ajouter une animation pour montrer que les calculs ont été mis à jour
+    const resultsPanel = document.querySelector(".results-panel");
+    if (resultsPanel) {
+      resultsPanel.classList.add("updated");
+      setTimeout(() => {
+        resultsPanel.classList.remove("updated");
+      }, 500);
+    }
+    
+    // Mettre à jour les barres de progression et autres éléments visuels
+    updateVisualScores();
+  }
+
+  // Fonction pour mettre à jour les barres de progression et les scores visuels
+  function updateVisualScores() {
+    // Mettre à jour les barres de progression
+    Object.keys(categories).forEach(categoryId => {
+      const progressBar = document.getElementById(`${categoryId}-progress`);
+      if (!progressBar) return;
+      
+      const scoreElement = document.getElementById(`${categoryId}-total-score`);
+      if (!scoreElement) return;
+      
+      const score = parseInt(scoreElement.textContent);
+      const maxScore = categoryId === "dynamism" ? 20 : 
+                      categoryId === "debt" ? 30 : 
+                      categoryId === "profitability" ? 30 : 
+                      categoryId === "structure" ? 10 : 10;
+      
+      const percentage = Math.min(100, (score / maxScore) * 100);
+      progressBar.style.width = `${percentage}%`;
+    });
+    
+    // Mettre à jour la couleur des score bubbles selon leur valeur
+    document.querySelectorAll(".score-bubble").forEach(bubble => {
+      const score = parseInt(bubble.textContent);
+      if (score >= 90) {
+        bubble.style.backgroundColor = "var(--grade-a)";
+      } else if (score >= 80) {
+        bubble.style.backgroundColor = "var(--grade-b)";
+      } else if (score >= 70) {
+        bubble.style.backgroundColor = "var(--grade-c)";
+      } else if (score >= 60) {
+        bubble.style.backgroundColor = "var(--grade-d)";
+      } else if (score >= 50) {
+        bubble.style.backgroundColor = "var(--grade-e)";
+      } else if (score >= 30) {
+        bubble.style.backgroundColor = "var(--grade-f)";
+      } else {
+        bubble.style.backgroundColor = "var(--grade-g)";
+      }
+    });
+  }
+
+  // Fonction pour mettre à jour l'interface des entrées de données
+  // Remplacer la fonction updateInputInterface() existante par celle-ci
+  function updateInputInterface() {
+    const inputPanelBody = document.querySelector(".input-panel .panel-body");
+    if (!inputPanelBody) return;
+    
+    // Vider le contenu actuel
+    inputPanelBody.innerHTML = "";
+    
+    // Regrouper les variables par catégorie
+    const variablesByCategory = {};
+    Object.entries(variables).forEach(([id, data]) => {
+      if (!variablesByCategory[data.category]) {
+        variablesByCategory[data.category] = [];
+      }
+      variablesByCategory[data.category].push({id, ...data});
+    });
+    
+    // Créer les groupes d'entrée par catégorie
+    Object.entries(variablesByCategory).forEach(([categoryId, vars]) => {
+      // Créer un seul conteneur pour chaque catégorie
+      const groupContainer = document.createElement("div");
+      groupContainer.className = "input-group-container";
+      groupContainer.innerHTML = `
+        <div class="input-group-header" style="background-color: var(--${categoryId});">
+          <i class="fas fa-${getCategoryIcon(categoryId)}"></i> ${categories[categoryId].name.toUpperCase()}
+        </div>
+        <div class="input-group category-inputs-${categoryId}">
+        </div>
+      `;
+      inputPanelBody.appendChild(groupContainer);
+      
+      const categoryInputsContainer = groupContainer.querySelector(`.category-inputs-${categoryId}`);
+      
+      // Ajouter toutes les variables de cette catégorie
+      vars.forEach(variable => {
+        const variableInput = document.createElement("div");
+        variableInput.className = "variable-input-container";
+        variableInput.style.marginBottom = "15px";
+        variableInput.innerHTML = `
+          <label for="${variable.id}-input">${variable.name}</label>
+          <div class="input-with-controls">
+            <button class="value-control decrease"><i class="fas fa-minus"></i></button>
+            <div class="input-wrapper">
+              <input type="number" id="${variable.id}-input" class="value-input" value="${variable.value}" data-variable="${variable.id}" step="0.1">
+              <span class="input-unit">${variable.unit}</span>
+            </div>
+            <button class="value-control increase"><i class="fas fa-plus"></i></button>
+          </div>
+        `;
+        
+        categoryInputsContainer.appendChild(variableInput);
+        
+        // Ajouter les écouteurs aux nouveaux contrôles
+        const input = variableInput.querySelector(".value-input");
+        input.addEventListener("change", function() {
+          const varId = this.dataset.variable;
+          if (varId && variables[varId]) {
+            variables[varId].value = parseFloat(this.value);
+            
+            // Update display values
+            const unit = variables[varId].unit || "";
+            const displayElement = document.getElementById(`${varId}-value-display`);
+            if (displayElement) {
+              displayElement.textContent = `${this.value} ${unit}`;
+            }
+            
+            calculateFinalGrade();
+          }
+        });
+        
+        // Écouteurs pour les boutons + et -
+        const increaseBtn = variableInput.querySelector(".value-control.increase");
+        increaseBtn.addEventListener("click", function() {
+          const input = this.closest(".input-with-controls").querySelector(".value-input");
+          const step = parseFloat(input.step) || 1;
+          input.value = (parseFloat(input.value) + step).toFixed(1);
+          input.dispatchEvent(new Event("change"));
+        });
+        
+        const decreaseBtn = variableInput.querySelector(".value-control.decrease");
+        decreaseBtn.addEventListener("click", function() {
+          const input = this.closest(".input-with-controls").querySelector(".value-input");
+          const step = parseFloat(input.step) || 1;
+          input.value = (parseFloat(input.value) - step).toFixed(1);
+          input.dispatchEvent(new Event("change"));
+        });
+      });
+    });
+  }
+
+  // Fonction auxiliaire pour obtenir l'icône de la catégorie
+  function getCategoryIcon(categoryId) {
+    switch(categoryId) {
+      case "dynamism": return "chart-line";
+      case "debt": return "coins";
+      case "profitability": return "percentage";
+      case "structure": return "building";
+      case "liquidity": return "tint";
+      default: return "chart-line";
+    }
+  }
+
+  // ===== Model Management System =====
+
+  // Global model storage
+  const modelManager = {
+    // Current model data (used when saving)
+    getCurrentModelData: function() {
+      return {
+        variables: JSON.parse(JSON.stringify(variables)), // Deep copy of variables
+        grades: JSON.parse(JSON.stringify(grades)), // Deep copy of grades
+        created: new Date().toISOString(),
+        updated: new Date().toISOString()
+      };
+    },
+    
+    // Save model to localStorage
+    saveModel: function(name, description = "") {
+      // Get all saved models
+      const models = this.getAllModels();
+      
+      // Create model ID
+      const modelId = "model_" + Date.now();
+      
+      // Create model object
+      const model = {
+        id: modelId,
+        name: name,
+        description: description,
+        data: this.getCurrentModelData()
+      };
+      
+      // Add to models list
+      models[modelId] = model;
+      
+      // Save to localStorage
+      localStorage.setItem("financial_models", JSON.stringify(models));
+      
+      return modelId;
+    },
+    
+    // Get all saved models
+    getAllModels: function() {
+      const models = localStorage.getItem("financial_models");
+      return models ? JSON.parse(models) : {};
+    },
+    
+    // Get a specific model by ID
+    getModel: function(modelId) {
+      const models = this.getAllModels();
+      return models[modelId] || null;
+    },
+    
+    // Delete a model
+    deleteModel: function(modelId) {
+      const models = this.getAllModels();
+      if (models[modelId]) {
+        delete models[modelId];
+        localStorage.setItem("financial_models", JSON.stringify(models));
+        return true;
+      }
+      return false;
+    },
+    
+    // Update a model
+    updateModel: function(modelId, data) {
+      const models = this.getAllModels();
+      if (models[modelId]) {
+        models[modelId] = { ...models[modelId], ...data };
+        models[modelId].data.updated = new Date().toISOString();
+        localStorage.setItem("financial_models", JSON.stringify(models));
+        return true;
+      }
+      return false;
+    },
+    
+    // Export all models as JSON
+    exportAllModels: function() {
+      return JSON.stringify(this.getAllModels(), null, 2);
+    },
+    
+    // Import models from JSON
+    importModels: function(jsonData) {
+      try {
+        const importedModels = JSON.parse(jsonData);
+        
+        // Validate the imported data
+        if (typeof importedModels !== 'object') {
+          throw new Error("Format de données invalide");
+        }
+        
+        // Get current models
+        const currentModels = this.getAllModels();
+        
+        // Merge imported models with current models
+        const mergedModels = { ...currentModels, ...importedModels };
+        
+        // Save merged models
+        localStorage.setItem("financial_models", JSON.stringify(mergedModels));
+        
+        return {
+          success: true,
+          message: `${Object.keys(importedModels).length} modèle(s) importé(s) avec succès`
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: `Erreur lors de l'importation: ${error.message}`
+        };
+      }
+    },
+    
+    // Load model data into application
+    loadModel: function(modelId) {
+      const model = this.getModel(modelId);
+      if (!model) return false;
+      
+      // Load variables
+      if (model.data.variables) {
+        variables = JSON.parse(JSON.stringify(model.data.variables));
+      }
+      
+      // Load grades
+      if (model.data.grades) {
+        grades = JSON.parse(JSON.stringify(model.data.grades));
+      }
+      
+      return true;
+    }
+  };
+
+  // Update model selection dropdown
+  function updateModelSelector() {
+    const selector = document.getElementById("model-select");
+    if (!selector) return;
+    
+    // Save current selection
+    const currentSelection = selector.value;
+    
+    // Clear existing options except default
+    while (selector.options.length > 1) {
+      selector.remove(1);
+    }
+    
+    // Get all models
+    const models = modelManager.getAllModels();
+    
+    // Add model options
+    Object.values(models).sort((a, b) => a.name.localeCompare(b.name)).forEach(model => {
+      const option = document.createElement("option");
+      option.value = model.id;
+      option.textContent = model.name;
+      selector.appendChild(option);
+    });
+    
+    // Restore selection if possible
+    if (currentSelection && Array.from(selector.options).some(option => option.value === currentSelection)) {
+      selector.value = currentSelection;
+    }
+  }
+
+  // Update models list in management modal
+  function updateModelsList() {
+    const listElement = document.getElementById("models-list");
+    if (!listElement) return;
+    
+    // Get all models
+    const models = modelManager.getAllModels();
+    const modelsList = Object.values(models);
+    
+    if (modelsList.length === 0) {
+      listElement.innerHTML = `
+        <tr>
+          <td colspan="4" style="padding: 20px; text-align: center; color: #777;">Aucun modèle enregistré</td>
+        </tr>
+      `;
+      return;
+    }
+    
+    // Sort models by name
+    modelsList.sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Generate HTML
+    listElement.innerHTML = modelsList.map(model => `
+      <tr data-model-id="${model.id}">
+        <td style="padding: 12px 15px; border: 1px solid #ddd;">${model.name}</td>
+        <td style="padding: 12px 15px; border: 1px solid #ddd;">${model.description || "-"}</td>
+        <td style="padding: 12px 15px; border: 1px solid #ddd;">${new Date(model.data.created).toLocaleDateString()}</td>
+        <td style="padding: 12px 15px; border: 1px solid #ddd; text-align: center;">
+          <button class="action-btn load-model" data-model-id="${model.id}" title="Charger ce modèle">
+            <i class="fas fa-upload"></i>
+          </button>
+          <button class="action-btn export-model" data-model-id="${model.id}" title="Exporter ce modèle">
+            <i class="fas fa-file-export"></i>
+          </button>
+          <button class="action-btn rename-model" data-model-id="${model.id}" title="Renommer ce modèle">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="action-btn delete-model" data-model-id="${model.id}" title="Supprimer ce modèle">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      </tr>
+    `).join("");
+    
+    // Add event listeners
+    listElement.querySelectorAll(".load-model").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const modelId = this.dataset.modelId;
+        if (confirm("Voulez-vous charger ce modèle? Les modifications non sauvegardées seront perdues.")) {
+          modelManager.loadModel(modelId);
+          document.getElementById("model-select").value = modelId;
+          
+          // Update UI
+          updateCategoryCounters();
+          updateVariableSelectors();
+          changeCategory(currentCategory);
+          
+          // Close the modal
+          document.getElementById("manage-models-modal").style.display = "none";
+          
+          // Show success notification
+          showNotification("Modèle chargé avec succès", "success");
+        }
+      });
+    });
+    
+    listElement.querySelectorAll(".export-model").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const modelId = this.dataset.modelId;
+        const model = modelManager.getModel(modelId);
+        if (model) {
+          // Create JSON file
+          const dataStr = JSON.stringify({ [modelId]: model }, null, 2);
+          const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+          
+          // Create download link
+          const exportFileDefaultName = `${model.name.replace(/\s+/g, "_")}.json`;
+          const linkElement = document.createElement("a");
+          linkElement.setAttribute("href", dataUri);
+          linkElement.setAttribute("download", exportFileDefaultName);
+          linkElement.click();
+        }
+      });
+    });
+    
+    listElement.querySelectorAll(".rename-model").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const modelId = this.dataset.modelId;
+        const model = modelManager.getModel(modelId);
+        if (model) {
+          const newName = prompt("Nouveau nom du modèle:", model.name);
+          if (newName && newName.trim()) {
+            const newDescription = prompt("Nouvelle description (optionnelle):", model.description || "");
+            
+            modelManager.updateModel(modelId, {
+              name: newName.trim(),
+              description: newDescription ? newDescription.trim() : ""
+            });
+            
+            // Update UI
+            updateModelsList();
+            updateModelSelector();
+            
+            showNotification("Modèle renommé avec succès", "success");
+          }
+        }
+      });
+    });
+    
+    listElement.querySelectorAll(".delete-model").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const modelId = this.dataset.modelId;
+        const model = modelManager.getModel(modelId);
+        if (model && confirm(`Êtes-vous sûr de vouloir supprimer le modèle "${model.name}" ?`)) {
+          modelManager.deleteModel(modelId);
+          
+          // Update UI
+          updateModelsList();
+          updateModelSelector();
+          
+          showNotification("Modèle supprimé", "success");
+        }
+      });
+    });
+  }
+
+  // Create a notification function
+  function showNotification(message, type = "info") {
+    // Check if notification container exists, if not create it
+    let container = document.getElementById("notification-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "notification-container";
+      container.style.position = "fixed";
+      container.style.bottom = "20px";
+      container.style.right = "20px";
+      container.style.zIndex = "9999";
+      document.body.appendChild(container);
+    }
+    
+    // Create notification element
+    const notification = document.createElement("div");
+    notification.style.backgroundColor = type === "success" ? "#4CAF50" : 
+                                      type === "error" ? "#F44336" : "#2196F3";
+    notification.style.color = "white";
+    notification.style.padding = "15px 20px";
+    notification.style.marginTop = "10px";
+    notification.style.borderRadius = "4px";
+    notification.style.boxShadow = "0 2px 10px rgba(0,0,0,0.2)";
+    notification.style.display = "flex";
+    notification.style.alignItems = "center";
+    notification.style.minWidth = "300px";
+    
+    // Add icon based on type
+    const icon = document.createElement("i");
+    icon.className = type === "success" ? "fas fa-check-circle" : 
+                   type === "error" ? "fas fa-exclamation-circle" : "fas fa-info-circle";
+    icon.style.marginRight = "10px";
+    icon.style.fontSize = "20px";
+    
+    notification.appendChild(icon);
+    notification.appendChild(document.createTextNode(message));
+    
+    // Add close button
+    const closeBtn = document.createElement("i");
+    closeBtn.className = "fas fa-times";
+    closeBtn.style.marginLeft = "auto";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.onclick = function() {
+      container.removeChild(notification);
+    };
+    
+    notification.appendChild(closeBtn);
+    
+    // Add to container
+    container.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (container.contains(notification)) {
+        container.removeChild(notification);
+      }
+    }, 5000);
+  }
+
+  // Initialisation
+  document.addEventListener("DOMContentLoaded", function() {
+    // Initialiser avec la première section et catégorie
+    changeCategory("dynamism");
+    
+    // Initialiser les sélecteurs de variables
+    updateVariableSelectors();
+    
+    // Configurer les écouteurs pour les inputs de grade
+    setupGradeInputListeners();
+    
+    // Écouteurs pour les onglets
+    document.querySelectorAll(".tab-item").forEach(item => {
+      item.addEventListener("click", function() {
+        changeTab(this.dataset.tab);
+      });
+    });
+    
+    // Écouteurs pour la navigation principale
+    document.querySelectorAll(".main-nav-item").forEach(item => {
+      item.addEventListener("click", function() {
+        changeMainSection(this.dataset.section);
+      });
+    });
+    
+    // Écouteurs pour les boutons de navigation entre onglets
+    document.querySelectorAll(".nav-btn[data-next]").forEach(btn => {
+      btn.addEventListener("click", function() {
+        changeTab(this.dataset.next);
+      });
+    });
+    
+    document.querySelectorAll(".nav-btn[data-prev]").forEach(btn => {
+      btn.addEventListener("click", function() {
+        changeTab(this.dataset.prev);
+      });
+    });
+    
+    // Écouteur pour passer à la section de calcul depuis l'onglet 4
+    const switchToNotationBtn = document.getElementById("switch-to-notation");
+    if (switchToNotationBtn) {
+      switchToNotationBtn.addEventListener("click", function() {
+        changeMainSection("calculation-section");
+      });
+    }
+    
+    // Écouteur pour retourner à la section de configuration
+    const backToConfigBtn = document.getElementById("back-to-config");
+    if (backToConfigBtn) {
+      backToConfigBtn.addEventListener("click", function() {
+        changeMainSection("configuration-section");
+      });
+    }
+    
+    // Écouteurs pour les catégories
+    document.querySelectorAll(".category-card").forEach(card => {
+      card.addEventListener("click", function() {
+        changeCategory(this.dataset.category);
+      });
+    });
+    
+    // Écouteur pour le bouton d'ajout de variable
+    const addVariableBtn = document.getElementById("add-variable-btn");
+    if (addVariableBtn) {
+      addVariableBtn.addEventListener("click", function() {
+        openVariableModal(false);
+      });
+    }
+    
+    // Écouteurs pour le modal de variable
+    const closeVariableModalBtn = document.getElementById("close-variable-modal");
+    if (closeVariableModalBtn) {
+      closeVariableModalBtn.addEventListener("click", closeVariableModal);
+    }
+    
+    const variableCancelBtn = document.getElementById("variable-cancel");
+    if (variableCancelBtn) {
+      variableCancelBtn.addEventListener("click", closeVariableModal);
+    }
+    
+    const variableSaveBtn = document.getElementById("variable-save");
+    if (variableSaveBtn) {
+      variableSaveBtn.addEventListener("click", saveVariable);
+    }
+    
+    // Écouteur pour le changement de variable dans les modalités
+    const modaliteVariableSelect = document.getElementById("modalite-variable-select");
+    if (modaliteVariableSelect) {
+      modaliteVariableSelect.addEventListener("change", function() {
+        currentVariable = this.value;
+        updateThresholdsDisplay();
+      });
+    }
+    
+    // Écouteur pour le bouton d'ajout de tranche
+    const addThresholdBtn = document.getElementById("add-threshold-btn");
+    if (addThresholdBtn) {
+      addThresholdBtn.addEventListener("click", function() {
+        openThresholdModal();
+      });
+    }
+    
+    // Écouteurs pour le modal de tranche
+    const closeThresholdModalBtn = document.getElementById("close-threshold-modal");
+    if (closeThresholdModalBtn) {
+      closeThresholdModalBtn.addEventListener("click", closeThresholdModal);
+    }
+    
+    const thresholdCancelBtn = document.getElementById("threshold-cancel");
+    if (thresholdCancelBtn) {
+      thresholdCancelBtn.addEventListener("click", closeThresholdModal);
+    }
+    
+    const thresholdSaveBtn = document.getElementById("threshold-save");
+    if (thresholdSaveBtn) {
+      thresholdSaveBtn.addEventListener("click", saveThreshold);
+    }
+    
+    // Écouteurs pour les inputs de poids
+    document.querySelectorAll(".weight-input").forEach(input => {
+      input.addEventListener("change", function() {
+        const varId = this.dataset.variable;
+        const weight = parseInt(this.value);
+        
+        if (weight >= 0 && weight <= 100) {
+          variables[varId].weight = weight;
+          updateWeightsDisplay();
+        } else {
+          this.value = variables[varId].weight;
+        }
+      });
+    });
+    
+    // Écouteurs pour les inputs de valeur dans l'onglet notation
+    document.querySelectorAll(".value-input").forEach(input => {
+      input.addEventListener("change", function() {
+        const varId = this.dataset.variable;
+        if (varId && variables[varId]) {
+          variables[varId].value = parseFloat(this.value);
+          
+          // Update display values
+          const unit = variables[varId].unit || "";
+          const displayElement = document.getElementById(`${varId}-value-display`);
+          if (displayElement) {
+            displayElement.textContent = `${this.value} ${unit}`;
+          }
+          
+          calculateFinalGrade();
+        }
+      });
+      
+      // Initial value update
+      const varId = input.dataset.variable;
+      if (varId && variables[varId]) {
+        const unit = variables[varId].unit || "";
+        const displayElement = document.getElementById(`${varId}-value-display`);
+        if (displayElement) {
+          displayElement.textContent = `${input.value} ${unit}`;
+        }
+      }
+    });
+    
+    // Écouteurs pour les boutons de contrôle + et -
+    document.querySelectorAll(".value-control.increase").forEach(button => {
+      button.addEventListener("click", function() {
+        const input = this.closest(".input-with-controls").querySelector(".value-input");
+        const step = parseFloat(input.step) || 1;
+        input.value = (parseFloat(input.value) + step).toFixed(1);
+        input.dispatchEvent(new Event("change"));
+      });
+    });
+    
+    document.querySelectorAll(".value-control.decrease").forEach(button => {
+      button.addEventListener("click", function() {
+        const input = this.closest(".input-with-controls").querySelector(".value-input");
+        const step = parseFloat(input.step) || 1;
+        input.value = (parseFloat(input.value) - step).toFixed(1);
+        input.dispatchEvent(new Event("change"));
+      });
+    });
+    
+    // Écouteur pour le bouton de recalcul
+    const recalculateBtn = document.getElementById("recalculate-btn");
+    if (recalculateBtn) {
+      recalculateBtn.addEventListener("click", function() {
+        calculateFinalGrade();
+        
+        // Ajouter un effet visuel de recalcul
+        this.classList.add("recalculating");
+        setTimeout(() => {
+          this.classList.remove("recalculating");
+        }, 500);
+      });
+    }
+
+    // Add event listener for save model button
+    const saveModelBtn = document.getElementById("save-model-btn");
+    if (saveModelBtn) {
+      saveModelBtn.addEventListener("click", function() {
+        document.getElementById("save-model-modal").style.display = "flex";
+      });
+    }
+    
+    // Add event listener for manage models button
+    const manageModelsBtn = document.getElementById("manage-models-btn");
+    if (manageModelsBtn) {
+      manageModelsBtn.addEventListener("click", function() {
+        updateModelsList();
+        document.getElementById("manage-models-modal").style.display = "flex";
+      });
+    }
+    
+    // Add event listeners for save model modal
+    document.getElementById("close-save-model-modal")?.addEventListener("click", function() {
+      document.getElementById("save-model-modal").style.display = "none";
+    });
+    
+    document.getElementById("save-model-cancel")?.addEventListener("click", function() {
+      document.getElementById("save-model-modal").style.display = "none";
+    });
+    
+    document.getElementById("save-model-save")?.addEventListener("click", function() {
+      const name = document.getElementById("model-name").value.trim();
+      const description = document.getElementById("model-description").value.trim();
+      
+      if (!name) {
+        alert("Veuillez saisir un nom pour le modèle.");
+        return;
+      }
+      
+      // Save model
+      const modelId = modelManager.saveModel(name, description);
+      
+      // Update model selector
+      updateModelSelector();
+      
+      // Set the newly created model as the current selection
+      if (document.getElementById("model-select")) {
+        document.getElementById("model-select").value = modelId;
+      }
+      
+      // Close modal
+      document.getElementById("save-model-modal").style.display = "none";
+      
+      // Clear form
+      document.getElementById("model-name").value = "";
+      document.getElementById("model-description").value = "";
+      
+      // Show notification
+      showNotification("Modèle enregistré avec succès", "success");
+    });
+    
+    // Add event listeners for manage models modal
+    document.getElementById("close-manage-models-modal")?.addEventListener("click", function() {
+      document.getElementById("manage-models-modal").style.display = "none";
+    });
+    
+    document.getElementById("manage-models-close")?.addEventListener("click", function() {
+      document.getElementById("manage-models-modal").style.display = "none";
+    });
+    
+    // Add event listener for export all models button
+    document.getElementById("export-all-models")?.addEventListener("click", function() {
+      const dataStr = modelManager.exportAllModels();
+      const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = "financial_models_export.json";
+      const linkElement = document.createElement("a");
+      linkElement.setAttribute("href", dataUri);
+      linkElement.setAttribute("download", exportFileDefaultName);
+      linkElement.click();
+    });
+    
+    // Add event listener for import models file input
+    document.getElementById("import-models-file")?.addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const result = modelManager.importModels(e.target.result);
+          if (result.success) {
+            updateModelsList();
+            updateModelSelector();
+            showNotification(result.message, "success");
+          } else {
+            showNotification(result.message, "error");
+          }
+          
+          // Clear the file input
+          event.target.value = "";
+        };
+        reader.readAsText(file);
+      }
+    });
+    
+    // Add event listener for model selection change
+    document.getElementById("model-select")?.addEventListener("change", function() {
+      const modelId = this.value;
+      if (modelId === "default") {
+        if (confirm("Voulez-vous charger le modèle par défaut? Les modifications non sauvegardées seront perdues.")) {
+          // Reload the page to reset to default
+          window.location.reload();
+        } else {
+          // Revert to the previous selection
+          updateModelSelector();
+        }
+      } else if (modelId) {
+        if (confirm("Voulez-vous charger ce modèle? Les modifications non sauvegardées seront perdues.")) {
+          modelManager.loadModel(modelId);
+          
+          // Update UI
+          updateCategoryCounters();
+          updateVariableSelectors();
+          
+          // If in configuration section, update category display
+          if (currentSection === "configuration-section") {
+            changeCategory(currentCategory);
+          }
+          
+          // If in calculation section, recalculate
+          if (currentSection === "calculation-section") {
+            // Mettre à jour l'interface de saisie avec les nouvelles variables
+            updateInputInterface();
+            
+            calculateFinalGrade();
+          }
+          
+          showNotification("Modèle chargé avec succès", "success");
+        } else {
+          // Revert to the previous selection
+          updateModelSelector();
+        }
+      }
+    });
+    
+    // Mettre à jour les poids
+    updateWeightsDisplay();
+    
+    // Calculer la note initiale si on est sur la section de calcul
+    if (currentSection === "calculation-section") {
+      // Mettre à jour l'interface de saisie avec la nouvelle variable
+      updateInputInterface();
+      // Recalculer la note finale
+      calculateFinalGrade();
+    }
+    
+    // Initialize model selector
+    updateModelSelector();
+  });
+</script>
